@@ -1,6 +1,6 @@
 ## Assignment 2: Search-Based Planning
 
-In this assignment, you will implement a search-based planner to find a plan to go from a starting board configuration to a goal board configuration in the board game [End of the Track](https://www.gaya-game.com/products/the-end-of-the-track) using Python. See [Appendix A](#_kwwezta36kaz) for the Python environment setup. See [Appendix B](#_1rntv3t3lcin) for information on Pytest and our recommendations for testing your code. [Code Handout](#_ec73vfu9re9n).
+In this assignment, you will implement a search-based planner to find a plan to go from a starting board configuration to a goal board configuration in the board game [End of the Track](https://www.gaya-game.com/products/the-end-of-the-track) using Python. See [Appendix A](#_kwwezta36kaz) for the Python environment setup. See [Appendix B](#_1rntv3t3lcin) for information on Pytest and our recommendations for testing your code. 
 
 **End of the Track**
 
