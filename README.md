@@ -90,27 +90,22 @@ We recommend using a virtual environment for these assignments. Instructions for
 
 <https://docs.conda.io/en/latest/miniconda.html>
 
-\## Creates an environment called “psruu” that uses Python 3.10
-
-conda create -n cs388u python=3.10
-
-\## Sets environment variables, including path variables, to enable the “cs388u”
-
-\## environment.
-
-conda activate cs388u
-
-\## installs numpy and pytest versions that are compatible with packages in the
-
-\## “cs388u” environment.
-
-conda install numpy pytest
-
-\## Restores path and environment variables to their values prior to activating
-
-\## this environment
-
-conda deactivate
+1. Create a new conda environment called `cs388u` that uses Python 3.10:
+     ```bash
+    conda create -n cs388u python=3.10
+     ```
+2. To activate the environment:
+     ```bash 
+     conda activate cs388u
+     ```
+3. Install the dependencies, numpy and pytest:
+     ```bash
+     conda install numpy pytest
+     ```
+4. To deactivate the environment:
+     ```
+     conda deactivate
+     ```
 
 ### Appendix B
 
