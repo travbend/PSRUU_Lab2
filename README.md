@@ -116,6 +116,12 @@ We’ve included some test cases in the test_search.py file. To test your code a
 conda activate cs388u
 python -m pytest
 ```
+You can also execute this command to run the tests before you implement the assignment - or parts of the assignment. It will just fail the tests corresponding to the parts that are not implemented. It will also print out some helpful information to help you debug what the issue is. For example, if you run the tests without implementing anything, you'll see a lot of lines with test failures such as:
+```
+FAILED test_search.py::TestSearch::test_game_state_goal_state - NotImplementedError: TODO: Implement this function
+```
+Note the `NotImplementedError`: It indicates that this piece of the assignment has not been implemented yet. As you start working on the assignment and run the tests, you may see different types of errors depending on what is missing or broken.
+
 We highly recommend that you come up with more comprehensive test cases to test your implementations. Your test cases will be important for finding bugs in your implementations and identifying corner cases that you may have initially missed; see the comments in test_search.py. You can also take a look at the pytest documentation.
 
 <https://docs.pytest.org/en/7.2.x/>
