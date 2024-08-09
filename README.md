@@ -111,6 +111,11 @@ We recommend using a virtual environment for these assignments. Instructions for
 
 **Pytest**
 
-We’ve included some test cases in the test_search.py file. To test your code against the included test cases, simply run pytest. We highly recommend that you come up with more comprehensive test cases to test your implementations. Your test cases will be important for finding bugs in your implementations and identifying corner cases that you may have initially missed; see the comments in test_search.py. You can also take a look at the pytest documentation.
+We’ve included some test cases in the test_search.py file. To test your code against the included test cases, run pytest as follows:
+```bash
+conda activate cs388u
+python -m pytest
+```
+We highly recommend that you come up with more comprehensive test cases to test your implementations. Your test cases will be important for finding bugs in your implementations and identifying corner cases that you may have initially missed; see the comments in test_search.py. You can also take a look at the pytest documentation.
 
 <https://docs.pytest.org/en/7.2.x/>
