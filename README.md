@@ -82,7 +82,7 @@ The assignment is worth 208 points in total. There are an additional 10 extra cr
 #### **Code Handout (3 files):** `game.py, search.py, test_search.py` in this repository
 
 # Submission Instructions
-Please submit a zip file in Gradescope under CS388U-assignment2. Your zip file should include the following files:
+Please submit a zip file in Gradescope under CS388U-assignment2. Your zip file should include the following two files only:
 1. `game.py`
 2. `search.py`
 
