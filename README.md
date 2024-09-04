@@ -55,10 +55,13 @@ Next, you will need to enumerate the possible actions that a player can take fro
 
 A. **_Implement_** `Rules.single_piece_actions(board_state, piece_idx: int)`
    **_Enumerate a single block piece’s possible action._** Given a BoardState and a piece_idx that is an index into the encoded board_state.state, return the set of actions that piece can take. In this part of the problem, we are interested only in the block pieces, not the ball pieces, so assume that piece_idx will only ever refer to block pieces.
+   
 B. **_Implement_** `Rules.single_ball_actions(board_state, player_idx: int)`
    **_ Enumerate a single ball piece’s possible actions._** This is similar to part (A), except we are interested in the possible actions that can be taken with the ball.
+   
 C. **_Implement_** `GameSimulator.generate_valid_actions(self, player_idx: int)`
    **_Enumerate all the valid actions for a player given a board configuration._** For this part, return the set of valid actions that the player can take. An action here is encoded as a tuple (relative_idx, position), as described in the code handout.
+   
 D. **_Implement_** `GameSimulator.validate_action(self, action: tuple, player_idx: int)`
    **_Action validation._** For this part, **return True only if the action is valid**; **otherwise you must raise a ValueError(“with a description about why this action is not valid”).**
 
