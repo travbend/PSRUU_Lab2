@@ -37,7 +37,7 @@ class BoardState:
 
         TODO: You need to implement this.
         """
-        raise NotImplementedError("TODO: Implement this function")
+        return self.N_COLS * cr[1] + cr[0]
 
     def decode_single_pos(self, n: int):
         """
@@ -48,7 +48,7 @@ class BoardState:
 
         TODO: You need to implement this.
         """
-        raise NotImplementedError("TODO: Implement this function")
+        return (n % self.N_COLS, n // self.N_COLS)
 
     def is_termination_state(self):
         """
@@ -60,7 +60,19 @@ class BoardState:
         
         TODO: You need to implement this.
         """
-        raise NotImplementedError("TODO: Implement this function")
+        if not self.is_valid():
+            return False
+
+        p1_ball, _, p2_ball, _ = self.get_positions()
+
+        if self.decode_single_pos(p1_ball)[1] == self.N_ROWS-1:
+            return True
+        
+        if self.decode_single_pos(p2_ball)[1] == 0:
+            return True
+        
+        return False
+        
 
     def is_valid(self):
         """
@@ -75,7 +87,133 @@ class BoardState:
         
         TODO: You need to implement this.
         """
-        raise NotImplementedError("TODO: Implement this function")
+        p1_ball, p1_pos, p2_ball, p2_pos = self.get_positions()
+
+        for pos in p1_pos:
+            if pos < 0 or pos > self.encode_single_pos((self.N_COLS-1, self.N_ROWS-1)):
+                return False
+            
+            if pos in p2_pos:
+                return False
+            
+        for pos in p2_pos:
+            if pos < 0 or pos > self.encode_single_pos((self.N_COLS-1, self.N_ROWS-1)):
+                return False
+            
+            if pos in p1_pos:
+                return False
+
+        if p1_ball not in p1_pos or p2_ball not in p2_pos:
+            return False
+        
+        return True
+        
+    def get_positions(self):
+        p1_ball = self.state[len(self.state) // 2 - 1]
+        p1_pos = self.state[:len(self.state) // 2 - 1]
+        p2_ball = self.state[len(self.state) - 1]
+        p2_pos = self.state[len(self.state) // 2: len(self.state) - 1]
+        return (p1_ball, p1_pos, p2_ball, p2_pos)
+    
+    def single_piece_actions(self, piece_idx):
+        pos = self.state[piece_idx]
+        col, row = self.decode_single_pos(pos)
+        result = []
+
+        if col-2 >= 0:
+            if row-1 >= 0:
+                result.append(self.encode_single_pos((col-2, row-1)))
+            
+            if row+1 < self.N_ROWS:
+                result.append(self.encode_single_pos((col-2, row+1)))
+        
+        if col+2 < self.N_COLS:
+            if row-1 >= 0:
+                result.append(self.encode_single_pos((col+2, row-1)))
+            
+            if row+1 < self.N_ROWS:
+                result.append(self.encode_single_pos((col+2, row+1)))
+
+        if row-2 >= 0:
+            if col-1 >= 0:
+                result.append(self.encode_single_pos((col-1, row-2)))
+            
+            if col+1 < self.N_COLS:
+                result.append(self.encode_single_pos((col+1, row-2)))
+        
+        if row+2 < self.N_ROWS:
+            if col-1 >= 0:
+                result.append(self.encode_single_pos((col-1, row+2)))
+            
+            if col+1 < self.N_COLS:
+                result.append(self.encode_single_pos((col+1, row+2)))
+        
+        return result
+    
+    def single_ball_actions(self, player_idx):
+        p1_ball, p1_pos, p2_ball, p2_pos = self.get_positions()
+
+        if player_idx == 0:
+            player_pos = set(p1_pos)
+            opponent_pos = set(p2_pos)
+            ball_pos = p1_ball
+        else:
+            player_pos = set(p2_pos)
+            opponent_pos = set(p1_pos)
+            ball_pos = p2_ball
+
+        result = set([ball_pos])
+        self.recurse_ball_actions(result, ball_pos, player_pos, opponent_pos)
+        result.remove(ball_pos)
+        return result
+    
+    def recurse_ball_actions(self, result: set, pos: int, player_pos: set, opponent_pos: set):
+        ball_col, ball_row = self.decode_single_pos(pos)
+
+        for play_pos in player_pos:
+            play_col, play_row = self.decode_single_pos(play_pos)
+
+            if play_pos in result:
+                continue
+
+            if play_col == ball_col:
+                valid = True
+                for opp_pos in opponent_pos:
+                    opp_col, opp_row = self.decode_single_pos(opp_pos)
+                    if opp_col == play_col and (play_row < opp_row < ball_row or play_row > opp_row > ball_row):
+                        valid = False
+                        break
+
+                if valid:
+                    result.add(play_pos)
+                    self.recurse_ball_actions(result, play_pos, player_pos, opponent_pos)
+                
+            if play_row == ball_row:
+                valid = True
+                for opp_pos in opponent_pos:
+                    opp_col, opp_row = self.decode_single_pos(opp_pos)
+                    if opp_row == play_row and (play_col < opp_col < ball_col or play_col > opp_col > ball_col):
+                        valid = False
+                        break
+
+                if valid:
+                    result.add(play_pos)
+                    self.recurse_ball_actions(result, play_pos, player_pos, opponent_pos)
+
+            if abs(play_row - ball_row) == abs(play_col - ball_col):
+                valid = True
+                for opp_pos in opponent_pos:
+                    opp_col, opp_row = self.decode_single_pos(opp_pos)
+
+                    if abs(opp_row - ball_row) == abs(opp_col - ball_col):
+                        if (play_row < opp_row < ball_row or play_row > opp_row > ball_row) and (play_col < opp_col < ball_col or play_col > opp_col > ball_col):
+                            valid = False
+                            break
+
+                if valid:
+                    result.add(play_pos)
+                    self.recurse_ball_actions(result, play_pos, player_pos, opponent_pos)
+
 
 class Rules:
 
@@ -95,7 +233,7 @@ class Rules:
         
         TODO: You need to implement this.
         """
-        raise NotImplementedError("TODO: Implement this function")
+        return board_state.single_piece_actions(piece_idx)
 
     @staticmethod
     def single_ball_actions(board_state, player_idx):
@@ -112,7 +250,7 @@ class Rules:
         
         TODO: You need to implement this.
         """
-        raise NotImplementedError("TODO: Implement this function")
+        return board_state.single_ball_actions(player_idx)
 
 class GameSimulator:
     """
@@ -172,7 +310,18 @@ class GameSimulator:
             
         TODO: You need to implement this.
         """
-        raise NotImplementedError("TODO: Implement this function")
+        start = len(self.game_state.state) // 2 * player_idx
+        end = len(self.game_state.state) // 2 * (player_idx+1)
+        result = []
+        for idx in range(start, end):
+            if idx == end-1:
+                for pos in Rules.single_ball_actions(self.game_state, player_idx):
+                    result.append((idx-start, pos))
+            else:
+                for pos in Rules.single_piece_actions(self.game_state, idx):
+                    result.append((idx-start, pos))
+
+        return result
 
     def validate_action(self, action: tuple, player_idx: int):
         """
@@ -189,10 +338,20 @@ class GameSimulator:
         
         TODO: You need to implement this.
         """
-        if False:
-            raise ValueError("For each case that an action is not valid, specify the reason that the action is not valid in this ValueError.")
-        if True:
-            return True
+        idx, pos = action
+        start = len(self.game_state.state) / 2 * player_idx
+        end = len(self.game_state.state) / 2 * (player_idx+1)
+
+        if idx < start or idx >= end:
+            raise ValueError("Invalid relative index")
+        
+        if idx == (end-1) and pos not in Rules.single_ball_actions(self.game_state, player_idx):
+            raise ValueError("Invalid ball action")
+        
+        if idx < (end-1) and pos not in Rules.single_piece_actions(self.game_state, idx):
+            raise ValueError("Invalid piece action")
+        
+        return True
     
     def update(self, action: tuple, player_idx: int):
         """

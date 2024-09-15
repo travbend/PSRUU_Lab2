@@ -65,7 +65,7 @@ class GameStateProblem(Problem):
 
         TODO: You need to set self.search_alg_fnc here
         """
-        self.search_alg_fnc = None
+        self.search_alg_fnc = self.breadth_first_algorithm
 
     def get_actions(self, state: tuple):
         """
@@ -136,3 +136,25 @@ class GameStateProblem(Problem):
         return solution ## Solution is an ordered list of (s,a)
     """
 
+    def breadth_first_algorithm(self):
+        q = queue.Queue()
+
+        if self.is_goal(self.initial_state):
+            return [(self.initial_state, None)]
+
+        for action in self.get_actions(self.initial_state):
+            new_state = self.execute(self.initial_state, action)
+            q.put((new_state, action, [(self.initial_state, action)]))
+
+        while not q.empty():
+            state, action, path = q.get()
+
+            if self.is_goal(state):
+                path.append((state, None))
+                return path
+            
+            for action in self.get_actions(state):
+                new_state = self.execute(state, action)
+                new_path = list(path)
+                new_path.append((state, action))
+                q.put((new_state, action, new_path))
