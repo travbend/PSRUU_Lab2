@@ -65,7 +65,7 @@ class GameStateProblem(Problem):
 
         TODO: You need to set self.search_alg_fnc here
         """
-        self.search_alg_fnc = self.breadth_first_algorithm
+        self.search_alg_fnc = self.a_star_algorithm
 
     def get_actions(self, state: tuple):
         """
@@ -158,3 +158,71 @@ class GameStateProblem(Problem):
                 new_path = list(path)
                 new_path.append((state, action))
                 q.put((new_state, action, new_path))
+
+    def create_hash(self, state: tuple):
+        board = ','.join(str(pos) for pos in state[0])
+        return board + ':' + str(state[1])
+
+    def heuristic(self, state: tuple):
+        h = np.inf
+
+        for goal in self.goal_state_set:
+            count = 0
+            for i in range(len(goal[0])):
+                if state[0][i] != goal[0][i]:
+                    count += 1
+
+            if state[1] != goal[1]:
+                count += 1
+
+            if count < h:
+                h = count
+
+        return h
+
+        
+    def reconstruct_path(self, came_from, state):
+        total_path = []
+        total_path.append((state, None))
+        state_hash = self.create_hash(state)
+        while state_hash in came_from:
+            action, state = came_from[state_hash]
+            state_hash = self.create_hash(state)
+            total_path.append((state, action))
+        return list(reversed(total_path))
+
+    def a_star_algorithm(self):
+        min_queue = queue.PriorityQueue()
+        queue_set = set()
+        came_from = {}
+        g_score = {}
+
+        init_hash = self.create_hash(self.initial_state)
+        g_score[init_hash] = 0
+        init_heuristic = self.heuristic(self.initial_state)
+        min_queue.put((init_heuristic, self.initial_state))
+        queue_set.add(init_hash)
+
+        while not min_queue.empty():
+            _, state = min_queue.get()
+            state_hash = self.create_hash(state)
+            queue_set.remove(state_hash)
+
+            if self.is_goal(state):
+                return self.reconstruct_path(came_from, state)
+            
+            for action in self.get_actions(state):
+                new_state = self.execute(state, action)
+                new_state_hash = self.create_hash(new_state)
+
+                tentative_g_score = g_score[state_hash] + 1
+                if new_state_hash not in g_score or tentative_g_score < g_score[new_state_hash]:
+                    came_from[new_state_hash] = (action, state)
+                    g_score[new_state_hash] = tentative_g_score
+                    new_score = tentative_g_score + self.heuristic(new_state)
+                    if new_state_hash not in queue_set:
+                        min_queue.put((new_score, new_state))
+                        queue_set.add(new_state_hash)
+
+
+        return "ERROR"
